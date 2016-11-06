@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="apple-touch-icon" sizes="57x57" href="http://dbradley771.com/favicons/apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="http://dbradley771.com/favicons/apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="http://dbradley771.com/favicons/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="http://dbradley771.com/favicons/apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="http://dbradley771.com/favicons/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="http://dbradley771.com/favicons/apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="http://dbradley771.com/favicons/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="http://dbradley771.com/favicons/apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="http://dbradley771.com/favicons/apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="http://dbradley771.com/favicons/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="http://dbradley771.com/favicons/favicon-194x194.png" sizes="194x194">
+    <link rel="icon" type="image/png" href="http://dbradley771.com/favicons/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="http://dbradley771.com/favicons/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="http://dbradley771.com/favicons/favicon-16x16.png" sizes="16x16">
+    <link rel="manifest" href="http://dbradley771.com/favicons/manifest.json">
+    <link rel="shortcut icon" href="http://dbradley771.com/favicons/favicon.ico">
+    <meta name="apple-mobile-web-app-title" content="David's TWD Stats">
+    <meta name="application-name" content="David's TWD Stats">
+    <meta name="msapplication-TileColor" content="#d1c19f">
+    <meta name="msapplication-TileImage" content="http://dbradley771.com/favicons/mstile-144x144.png">
+    <meta name="msapplication-config" content="http://dbradley771.com/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#d1c19f">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,400,700" rel="stylesheet">
+    <title>David's HI Stats</title>
+    <style type="text/css">
+        @font-size-base: 15px;
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: #474747;
+            color: #ffffff;
+            font-size: 98%;
+            font-family: 'Open Sans Condensed', sans-serif;
+            font-weight: 300;
+        }
+        
+        body {
+            padding: 0 1em;
+        }
+        
+        #wrapper {
+            margin: auto;
+            text-align: center;
+            width: 100%;
+            max-width: 900px;
+        }
+        
+        
+        #header {
+            margin-top: 2em;
+            font-size: 3em;
+            font-weight: 400; 
+        }
+
+        @media (max-width: 800px) {
+            #header {
+                margin-top: 1em;
+            }
+        }
+        
+        hr {
+            display: block;
+            height: 1px;
+            border: 0;
+            border-top: 1px solid #868686;
+            margin: 1.5em 0;
+            padding: 0;
+        }
+        
+        .stacked {
+            margin: auto;
+            border-collapse: separate;
+            border-spacing: 1em 0;
+        }
+        
+        .stacked thead {
+            font-weight: 300;
+            font-size: 2.5em;
+        }
+        
+        .stacked tbody {
+            font-weight: 300;
+            font-size: 4.5em;
+        }
+        
+        .stacked td {
+            vertical-align: text-top;
+        }
+        
+        .stacked span {
+            display: inline-block;
+        }
+        
+        .progBar {
+            position: absolute;
+            background-color: #626262;
+            z-index: 1;
+            width: 0%;
+            top: 0.1em;
+            bottom: 0.1em;
+            left: 0;
+            transition: width 200ms cubic-bezier(0.0, 0.0, 0.2, 1);
+        }
+        
+        .progText {
+            position: relative;
+            float: left;
+            z-index: 2;
+        }
+        
+        .progNumb {
+            position: relative;
+            float: right;
+            z-index: 2;
+        }
+        
+        #stats {
+            margin: auto;
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        #stats tbody {
+            font-weight: 300;
+            font-size: 2.5em;
+        }
+        
+        #stats td {
+            position: relative;
+            padding: 0.15em;
+            height: 1.2em;
+        }      
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="jquery-csv.js"></script>
+    <script type="text/javascript">
+        var episodeOverall = 45; // <--------------------------- HERE! THIS ONE!
+        var totalEpisodesOverall = 72;
+        
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: "list.csv",
+                dataType: "text",
+                success: function(csv) {
+                    data = $.csv.toArrays(csv);
+                    episodeInSeason = data[episodeOverall][2];
+                    totalEpisodesInSeason = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        if ((i <= totalEpisodesOverall) && (data[i][1] == data[episodeOverall][1])) {
+                            totalEpisodesInSeason++;
+                        }
+                    }
+                    
+                    if (episodeOverall == 0) {
+                        document.getElementById('episodeToWatch').innerHTML = "<span>E" + data[episodeOverall+1][0] + "</span> <span>\"" + data[episodeOverall+1][1] + "\"</span>";
+                        document.getElementById('seasonProg').innerHTML = "0/0 (0.0%)";
+                        document.getElementById('overallProg').innerHTML = (episodeOverall + "/" + totalEpisodesOverall) + " " + ("(" + ((episodeOverall/totalEpisodesOverall) * 100).toFixed(1) + "%)");
+                    } else if (episodeOverall >= totalEpisodesOverall) {
+                        document.getElementById('episodeToWatch').innerHTML = "Unkown";
+                        document.getElementById('overallProg').innerHTML = (totalEpisodesOverall + "/" + totalEpisodesOverall) + " " + ("(" + ((totalEpisodesOverall/totalEpisodesOverall) * 100).toFixed(1) + "%)");
+                        document.getElementById('overallProgBar').style.width = ((totalEpisodesOverall/totalEpisodesOverall) * 100) + "%";
+                    } else if (episodeOverall < totalEpisodesOverall) {
+                        document.getElementById('episodeToWatch').innerHTML = "<span>E" + data[episodeOverall+1][0] + "</span> <span>\"" + data[episodeOverall+1][1] + "\"</span>";
+                        document.getElementById('overallProg').innerHTML = (episodeOverall + "/" + totalEpisodesOverall) + " " + ("(" + ((episodeOverall/totalEpisodesOverall) * 100).toFixed(1) + "%)");
+                        document.getElementById('overallProgBar').style.width = ((episodeOverall/totalEpisodesOverall) * 100) + "%";
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="header">
+            <div style="text-align: left; font-size: 90%; line-height: 100%;">HOW FAR BEHIND IS DAVID IN</div>
+            <div style="text-align: right; font-weight: 700; font-size: 200%; line-height: 100%;">Hello Internet?</div>
+        </div>
+        <hr/>
+        <div>
+            <table class="stacked">
+                <thead>
+                    <td>Current Episode to Complete</td>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="episodeToWatch">
+                            ?
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr/>
+        <div>
+            <table class="stacked">
+                <thead>
+                    <td>Episodes Completed</td>
+                    <td>Episodes to&nbsp;Complete</td>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <script>
+                                document.write(episodeOverall);
+                            </script>
+                        </td>
+                        <td>
+                            <script>
+                                document.write(totalEpisodesOverall - episodeOverall);
+                            </script>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <hr/>
+        <div>
+            <table id="stats">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="progText">Overall Progress</div>
+                            <div class="progNumb" id="overallProg"></div>
+                            <div class="progBar" id="overallProgBar"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
